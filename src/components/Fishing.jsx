@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFish } from "@fortawesome/free-solid-svg-icons";
 import "./Fishing.css";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Fishing = () => {
   const [progress, setProgress] = useState(0);
@@ -10,7 +12,6 @@ const Fishing = () => {
   const intervalRef = useRef(null);
   const progressTimerRef = useRef(null);
   const progressUpdatedRef = useRef(false);
-  const progressIndicatorRemoveDelay = 1000;
   const fishMovementRef = useRef(null);
   const baitTimerRef = useRef(null);
   const baitRef = useRef(null);
@@ -76,7 +77,9 @@ const Fishing = () => {
         progressElement.style.transition = `height ${progressUpdaterate}ms linear`;
         progressElement.style.height = `${newHeight}%`;
       } else {
-        console.success("You caught the fish. Good job!!", "Horray!!");
+        toast.success("You caught the fish! Good job!", {
+          position: "top-right",
+        });
         reset();
       }
     } else {
@@ -112,7 +115,7 @@ const Fishing = () => {
       progressTimerRef.current = setTimeout(() => {
         progressbar(overlapping);
         progressUpdatedRef.current = false;
-      }, document.querySelector(".fishing").dataset.progressupdaterate || 200);
+      }, 200);
     }
   };
 
@@ -120,7 +123,7 @@ const Fishing = () => {
     const bait = baitRef.current;
     if (bait) {
       if (direction === "up") {
-        bait.style.transition = "top 3s ease-out";
+        bait.style.transition = "top 5s ease-out";
         bait.style.top = "0%";
       } else if (direction === "down") {
         bait.style.transition = "top 1s ease-in";
@@ -136,20 +139,13 @@ const Fishing = () => {
     if (intervalRef.current) return;
     moveBait("up");
     setIsHeld(true);
-    intervalRef.current = setInterval(() => {
-      checkOverlapping();
-    }, 10);
     setIsReeling(true);
   };
 
   const stopHolding = () => {
-    clearInterval(intervalRef.current);
     intervalRef.current = null;
     setIsHeld(false);
     moveBait("down");
-    setTimeout(() => {
-      setProgress(0);
-    }, progressIndicatorRemoveDelay);
     setIsReeling(false);
   };
 
@@ -182,6 +178,9 @@ const Fishing = () => {
     document.addEventListener("mouseup", stopHolding);
     document.addEventListener("mouseleave", stopHolding);
 
+    intervalRef.current = setInterval(() => {
+      checkOverlapping();
+    }, 10);
     moveFish();
 
     return () => {
@@ -195,12 +194,12 @@ const Fishing = () => {
 
   return (
     <div
-    className="fishing"
-    data-reelpower={reelPower}
-    data-baitweight="1"
-    data-progress={progressIncrement}
-    data-progresspenalty={progressPenalty}
-    data-progressupdaterate="200"
+      className="fishing"
+      data-reelpower={reelPower}
+      data-baitweight="1"
+      data-progress={progressIncrement}
+      data-progresspenalty={progressPenalty}
+      data-progressupdaterate="200"
     >
       <div className="rod">
         <div className="reel">
@@ -274,6 +273,7 @@ const Fishing = () => {
           </div>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 };
