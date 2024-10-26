@@ -48,7 +48,7 @@ const Fishing = () => {
       setTimeout(() => {
         fishRef.current.style.display = "block";
         moveFish();
-      }, parseInt(fishRef.current.dataset.speed) || 1000);
+      }, 10000);
     }
 
     setProgress(0);
