@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFish } from "@fortawesome/free-solid-svg-icons";
 import "./Fishing.css";
@@ -79,7 +79,7 @@ const Fishing = () => {
     progressUpdatedRef.current = false;
   };
 
-  const checkOverlapping = () => {
+  const checkOverlapping = useCallback(() => {
     const bait = baitRef.current;
     const fish = fishRef.current;
 
@@ -102,9 +102,9 @@ const Fishing = () => {
         progressUpdatedRef.current = false;
       }, document.querySelector(".fishing").dataset.progressupdaterate || 200);
     }
-  };
+  });
 
-  const moveBait = (direction) => {
+  const moveBait = useCallback((direction) => {
     const bait = baitRef.current;
     if (bait) {
       if (direction === "up") {
@@ -116,9 +116,9 @@ const Fishing = () => {
         setTimeout(() => { bait.style.top = "79%"}, 10);
       }
     }
-  };
+  });
 
-  const startHolding = () => {
+  const startHolding = useCallback(() => {
     if (intervalRef.current) return;
     moveBait("up");
     setIsHeld(true);
@@ -126,9 +126,9 @@ const Fishing = () => {
       checkOverlapping();
     }, 10);
     setIsReeling(true);
-  };
+  },[moveBait, checkOverlapping]);
 
-  const stopHolding = () => {
+  const stopHolding = useCallback(() => {
     clearInterval(intervalRef.current);
     intervalRef.current = null;
     setIsHeld(false);
@@ -137,7 +137,7 @@ const Fishing = () => {
       setProgress(0);
     }, progressIndicatorRemoveDelay);
     setIsReeling(false);
-  };
+  },[moveBait, checkOverlapping]);
 
   const moveFish = () => {
     fishMovementRef.current = setInterval(() => {
