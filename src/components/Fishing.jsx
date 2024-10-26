@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFish } from "@fortawesome/free-solid-svg-icons";
 import "./Fishing.css";
@@ -15,6 +15,18 @@ const Fishing = () => {
   const baitTimerRef = useRef(null);
   const baitRef = useRef(null);
   const fishRef = useRef(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [reelPower, setReelPower] = useState(10);
+  const [progressPenalty, setProgressPenalty] = useState(3);
+  const [progressIncrement, setProgressIncrement] = useState(2);
+
+  const openSettingsMenu = () => {
+    setIsSettingsOpen(true);
+  };
+
+  const closeSettingsMenu = () => {
+    setIsSettingsOpen(false);
+  };
 
   const randomNumber = (min, max) => Math.random() * (max - min) + min;
 
@@ -79,7 +91,7 @@ const Fishing = () => {
     progressUpdatedRef.current = false;
   };
 
-  const checkOverlapping = useCallback(() => {
+  const checkOverlapping = () => {
     const bait = baitRef.current;
     const fish = fishRef.current;
 
@@ -102,9 +114,9 @@ const Fishing = () => {
         progressUpdatedRef.current = false;
       }, document.querySelector(".fishing").dataset.progressupdaterate || 200);
     }
-  });
+  };
 
-  const moveBait = useCallback((direction) => {
+  const moveBait = (direction) => {
     const bait = baitRef.current;
     if (bait) {
       if (direction === "up") {
@@ -113,12 +125,14 @@ const Fishing = () => {
       } else if (direction === "down") {
         bait.style.transition = "top 1s ease-in";
         bait.style.top = "76%";
-        setTimeout(() => { bait.style.top = "79%"}, 10);
+        setTimeout(() => {
+          bait.style.top = "79%";
+        }, 10);
       }
     }
-  });
+  };
 
-  const startHolding = useCallback(() => {
+  const startHolding = () => {
     if (intervalRef.current) return;
     moveBait("up");
     setIsHeld(true);
@@ -126,9 +140,9 @@ const Fishing = () => {
       checkOverlapping();
     }, 10);
     setIsReeling(true);
-  },[moveBait, checkOverlapping]);
+  };
 
-  const stopHolding = useCallback(() => {
+  const stopHolding = () => {
     clearInterval(intervalRef.current);
     intervalRef.current = null;
     setIsHeld(false);
@@ -137,7 +151,7 @@ const Fishing = () => {
       setProgress(0);
     }, progressIndicatorRemoveDelay);
     setIsReeling(false);
-  },[moveBait]);
+  };
 
   const moveFish = () => {
     fishMovementRef.current = setInterval(() => {
@@ -177,16 +191,16 @@ const Fishing = () => {
       clearInterval(intervalRef.current);
       clearInterval(fishMovementRef.current);
     };
-  }, [startHolding, stopHolding]);
+  }, []);
 
   return (
     <div
-      className="fishing"
-      data-reelpower="10"
-      data-baitweight="1"
-      data-progress="2"
-      data-progresspenalty="3"
-      data-progressupdaterate="200"
+    className="fishing"
+    data-reelpower={reelPower}
+    data-baitweight="1"
+    data-progress={progressIncrement}
+    data-progresspenalty={progressPenalty}
+    data-progressupdaterate="200"
     >
       <div className="rod">
         <div className="reel">
@@ -219,6 +233,47 @@ const Fishing = () => {
           <div className="bar" style={{ height: `${progress}%` }}></div>
         </div>
       </div>
+      <div className="settings-container">
+        <button className="settings-button" onClick={openSettingsMenu}>
+          ⚙️ Settings
+        </button>
+        <span className="settings-tooltip">Adjust game settings</span>
+      </div>
+
+      {isSettingsOpen && (
+        <div className="settings-modal">
+          <div className="settings-modal-content">
+            <span className="close-button" onClick={closeSettingsMenu}>
+              &times;
+            </span>
+            <h2>Game Settings</h2>
+            <div className="setting-item">
+              <label>Reel Power: </label>
+              <input
+                type="number"
+                value={reelPower}
+                onChange={(e) => setReelPower(Number(e.target.value))}
+              />
+            </div>
+            <div className="setting-item">
+              <label>Progress Increment: </label>
+              <input
+                type="number"
+                value={progressIncrement}
+                onChange={(e) => setProgressIncrement(Number(e.target.value))}
+              />
+            </div>
+            <div className="setting-item">
+              <label>Progress Penalty: </label>
+              <input
+                type="number"
+                value={progressPenalty}
+                onChange={(e) => setProgressPenalty(Number(e.target.value))}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
