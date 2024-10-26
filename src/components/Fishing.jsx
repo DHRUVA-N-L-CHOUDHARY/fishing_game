@@ -21,6 +21,10 @@ const Fishing = () => {
   const [progressPenalty, setProgressPenalty] = useState(3);
   const [progressIncrement, setProgressIncrement] = useState(2);
 
+  const [baitSpeed, setBaitSpeed] = useState(5000); // Default 5000ms
+  const [fishSpeed, setFishSpeed] = useState(1000); // Default 1000ms
+  const [fishJumpRange, setFishJumpRange] = useState(100);
+
   const openSettingsMenu = () => {
     setIsSettingsOpen(true);
   };
@@ -123,7 +127,7 @@ const Fishing = () => {
     const bait = baitRef.current;
     if (bait) {
       if (direction === "up") {
-        bait.style.transition = "top 5s ease-out";
+        bait.style.transition = `top ${baitSpeed} ease-out`;
         bait.style.top = "0%";
       } else if (direction === "down") {
         bait.style.transition = "top 1s ease-in";
@@ -219,8 +223,8 @@ const Fishing = () => {
             ref={fishRef}
             style={{ top: "20%" }}
             data-movepremsec="1500"
-            data-jumprange="100"
-            data-speed="1000"
+            data-jumprange={fishJumpRange}
+            data-speed={fishSpeed}
             data-depth="20"
           >
             <FontAwesomeIcon icon={faFish} />
@@ -268,6 +272,30 @@ const Fishing = () => {
                 type="number"
                 value={progressPenalty}
                 onChange={(e) => setProgressPenalty(Number(e.target.value))}
+              />
+            </div>
+            <div className="setting-item">
+              <label>Bait Speed (ms): </label>
+              <input
+                type="number"
+                value={baitSpeed}
+                onChange={(e) => setBaitSpeed(Number(e.target.value))}
+              />
+            </div>
+            <div className="setting-item">
+              <label>Fish Speed (ms): </label>
+              <input
+                type="number"
+                value={fishSpeed}
+                onChange={(e) => setFishSpeed(Number(e.target.value))}
+              />
+            </div>
+            <div className="setting-item">
+              <label>Fish Jump Range: </label>
+              <input
+                type="number"
+                value={fishJumpRange}
+                onChange={(e) => setFishJumpRange(Number(e.target.value))}
               />
             </div>
           </div>
