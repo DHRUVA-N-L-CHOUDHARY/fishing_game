@@ -137,7 +137,7 @@ const Fishing = () => {
       setProgress(0);
     }, progressIndicatorRemoveDelay);
     setIsReeling(false);
-  },[moveBait, checkOverlapping]);
+  },[moveBait]);
 
   const moveFish = () => {
     fishMovementRef.current = setInterval(() => {
@@ -177,7 +177,7 @@ const Fishing = () => {
       clearInterval(intervalRef.current);
       clearInterval(fishMovementRef.current);
     };
-  }, []);
+  }, [startHolding, stopHolding]);
 
   return (
     <div
